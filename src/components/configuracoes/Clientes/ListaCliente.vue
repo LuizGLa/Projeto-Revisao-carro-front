@@ -1,0 +1,197 @@
+<template>
+  <div>
+    <q-toolbar class="q-pa-none flex justify-between items-center">
+      <q-btn
+        icon="add_circle"
+        color="primary"
+        label="Adicionar"
+        size="md"
+        to="/configuracoes/clientes/adicionar"
+      />
+    </q-toolbar>
+    <q-table
+      separator="cell"
+      bordered
+      :rows="clientes"
+      :columns="campos"
+      row-key="nome"
+      class="q-mt-sm"
+      hide-bottom
+      :pagination="pagination"
+    >
+      <template v-slot:body-cell-acao="scope">
+        <td>
+          <div class="q-pa-sm text-center q-gutter-sm items-center">
+            <q-btn
+              title="Editar"
+              dense
+              size="sm"
+              unelevated
+              color="warning"
+              icon="edit"
+              @click="
+                $router.push(`/configuracoes/clientes/editar/${scope.row.id}`)
+              "
+            />
+            <q-btn
+              dense
+              size="sm"
+              unelevated
+              color="negative"
+              icon="close"
+              @click="exclui(scope.row.id)"
+              title="Excluir"
+            />
+          </div>
+        </td>
+      </template>
+    </q-table>
+    <div v-if="totalPaginas > 1" class="row justify-center q-pt-md">
+      <q-pagination
+        @update:model-value="buscaDadosTabela"
+        v-model="paginaAtual"
+        :max="totalPaginas"
+        :max-pages="5"
+        direction-links
+        unelevated
+        color="grey-10"
+        active-color="primary"
+        active-text-color="white"
+      />
+    </div>
+  </div>
+</template>
+
+<script>
+import { useQuasar } from "quasar";
+import { api } from "boot/axios";
+import { onMounted, ref } from "vue";
+
+const campos = [
+  {
+    name: "nome",
+    required: true,
+    label: "Nome",
+    align: "left",
+    field: "nome",
+    sortable: true,
+    style: "width: 45%",
+  },
+  {
+    name: "gênero",
+    required: true,
+    label: "Gênero",
+    align: "left",
+    field: "sexo",
+    sortable: true,
+    style: "width: 45%",
+  },
+  {
+    name: "idade",
+    required: true,
+    label: "Idade",
+    align: "center",
+    field: "idade",
+    sortable: true,
+    style: "width: 5%",
+  },
+  {
+    name: "acao",
+    field: "acao",
+    align: "center",
+    label: "Ações",
+    style: "width: 5%",
+  },
+];
+
+export default {
+  setup() {
+    const $q = useQuasar();
+    const clientes = ref([]);
+    const totalPaginas = ref(0);
+
+    onMounted(() => {
+      buscaDadosTabela();
+    });
+
+    async function buscaDadosTabela() {
+      try {
+        const request = await api.get("api/clientes");
+        clientes.value = request.data;
+      } catch (error) {
+        $q.notify({
+          color: "negative",
+          position: "top",
+          message: "Ocorreu um erro!",
+          icon: "report_problem",
+        });
+      }
+    }
+
+    async function exclui(item) {
+      try {
+        const request = await api.delete(`api/clientes/${item}`);
+        if (request.status == 200) {
+          $q.notify({
+            type: "positive",
+            message: "Cliente removido com sucesso!",
+            position: "top",
+            timeout: 350,
+          });
+        }
+        buscaDados();
+      } catch (error) {
+        $q.notify({
+          color: "negative",
+          position: "top",
+          message: "Ocorreu um erro!",
+          icon: "report_problem",
+        });
+      }
+    }
+    return {
+      campos,
+      clientes,
+      totalPaginas,
+      exclui,
+      buscaDadosTabela,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.icones {
+  color: #22487b;
+  width: 35em;
+  margin: 1.2em;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 35em;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  padding: em;
+  margin: 1em;
+}
+
+label {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0.5em;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  background-color: #102e55;
+}
+</style>
