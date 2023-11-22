@@ -160,38 +160,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.icones {
-  color: #22487b;
-  width: 35em;
-  margin: 1.2em;
-}
-
-.group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 35em;
-  border: 1px solid #ccc;
-  border-radius: 15px;
-  padding: em;
-  margin: 1em;
-}
-
-label {
-  font-size: 1.2em;
-  font-weight: bold;
-  color: #ffffff;
-}
-
-.title {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  padding: 0.5em;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
-  background-color: #102e55;
-}
-</style>
+<style scoped></style>

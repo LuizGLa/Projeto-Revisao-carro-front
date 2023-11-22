@@ -6,7 +6,7 @@
         color="primary"
         label="Adicionar"
         size="md"
-        to="/configuracoes/clientes/adicionar"
+        to="/configuracoes/carros/adicionar"
       />
     </q-toolbar>
     <q-table
@@ -30,7 +30,7 @@
               color="warning"
               icon="edit"
               @click="
-                $router.push(`/configuracoes/clientes/editar/${scope.row.id}`)
+                $router.push(`/configuracoes/carros/editar/${scope.row.id}`)
               "
             />
             <q-btn
@@ -148,7 +148,7 @@ export default {
 
     async function exclui(item) {
       try {
-        const request = await api.delete(`api/clientes/${item}`);
+        const request = await api.delete(`api/carros/${item}`);
         if (request.status == 200) {
           $q.notify({
             type: "positive",
@@ -157,7 +157,7 @@ export default {
             timeout: 350,
           });
         }
-        buscaDados();
+        buscaDadosTabela();
       } catch (error) {
         $q.notify({
           color: "negative",
@@ -179,12 +179,6 @@ export default {
 </script>
 
 <style scoped>
-.icones {
-  color: #22487b;
-  width: 35em;
-  margin: 1.2em;
-}
-
 .group {
   display: flex;
   flex-direction: column;
@@ -194,22 +188,5 @@ export default {
   border-radius: 15px;
   padding: em;
   margin: 1em;
-}
-
-label {
-  font-size: 1.2em;
-  font-weight: bold;
-  color: #ffffff;
-}
-
-.title {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  padding: 0.5em;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
-  background-color: #102e55;
 }
 </style>

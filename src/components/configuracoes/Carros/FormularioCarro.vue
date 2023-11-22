@@ -2,36 +2,71 @@
   <div>
     <q-form @submit="submit" greedy>
       <div class="row q-col-gutter-md">
-        <div class="col-12">
+        <div class="col-6 col-sm-4 col-sm-4">
           <q-input
-            ref="nomeRef"
+            ref="marcaRef"
             dense
             outlined
-            v-model="form.nome"
-            label="Nome"
+            v-model="form.marca"
+            label="Marca"
             :rules="[(val) => !!val || 'Campo Obrigatório']"
           />
         </div>
-        <div class="col-12 col-sm-6 col-md-6 q-mb-lg">
+        <div class="col-6 col-sm-4 col-md-4 q-mb-lg">
           <q-input
-            ref="idadeRef"
+            ref="modeloRef"
             dense
             outlined
-            v-model="form.idade"
-            label="Idade"
+            v-model="form.modelo"
+            label="Modelo"
             :rules="[(val) => !!val || 'Campo Obrigatório']"
           />
         </div>
-        <div class="col-12 col-sm-6 col-md-6 q-mb-lg">
+        <div class="col-4 col-sm-3 col-md-6 q-mb-lg">
+          <q-input
+            ref="corRef"
+            dense
+            outlined
+            v-model="form.cor"
+            label="Cor"
+            :rules="[(val) => !!val || 'Campo Obrigatório']"
+          />
+        </div>
+        <div class="col-4 col-sm-3 col-md-4 q-mb-lg">
+          <q-input
+            ref="anoRef"
+            dense
+            outlined
+            v-model="form.ano"
+            label="Ano"
+            :rules="[(val) => !!val || 'Campo Obrigatório']"
+          />
+        </div>
+        <div class="col-4 col-sm-3 col-md-3 q-mb-lg">
+          <q-input
+            ref="placaRef"
+            dense
+            outlined
+            v-model="form.placa"
+            label="Placa"
+            :rules="[(val) => !!val || 'Campo Obrigatório']"
+          />
+        </div>
+        <div class="col-2 col-sm-3 col-md-3">
           <q-select
-            ref="generoRef"
+            ref="icone_id"
+            v-model="form.cliente_id"
             dense
+            style="width: 15em"
             outlined
-            v-model="form.sexo"
+            label="Cliente"
+            :options="clientes"
+            option-label="nome"
             behavior="menu"
-            :options="generos"
-            label="Gênero"
+            option-value="value"
             :rules="[(val) => !!val || 'Campo Obrigatório']"
+            emit-value
+            map-options
           />
         </div>
       </div>
@@ -72,12 +107,15 @@ export default {
     const $q = useQuasar();
     const $router = useRouter();
     const $route = useRoute();
-    const generos = ["Masculino", "Feminino"];
+    const clientes = ref([]);
 
     const form = ref({
-      nome: "",
-      sexo: "",
-      idade: "",
+      marca: "",
+      modelo: "",
+      cor: "",
+      ano: "",
+      placa: "",
+      cliente_id: "",
     });
 
     const editor = {
@@ -107,19 +145,44 @@ export default {
       ],
     };
 
-    onMounted(async () => {
-      if (props.acao === "editar") {
-        const response = await api.get(`api/clientes/${$route.params.id}`);
-        const cliente = response.data;
-        console.log(cliente);
+    async function carregaClientes() {
+      try {
+        const { status, data } = await api.get(`api/clientes`);
+        if (status == 200) {
+          data.map((value) => {
+            clientes.value.push({
+              value: value.id,
+              nome: value.nome,
+            });
+          });
+          console.log(clientes.value);
+        }
+      } catch (error) {
+        $q.notify({
+          color: "negative",
+          position: "bottom",
+          message: "Ocorreu um erro!",
+          icon: "report_problem",
+        });
+      }
+    }
 
-        form.value.nome = cliente.nome;
-        form.value.sexo = cliente.sexo;
-        form.value.idade = cliente.idade;
+    onMounted(async () => {
+      carregaClientes();
+      if (props.acao === "editar") {
+        const response = await api.get(`api/carros/${$route.params.id}`);
+        const carro = response.data;
+
+        form.value.marca = carro.nome;
+        form.value.modelo = carro.modelo;
+        form.value.cor = carro.cor;
+        form.value.ano = carro.ano;
+        form.value.placa = carro.placa;
       }
     });
 
     function submit() {
+      console.log("form", form.value);
       if (props.acao === "editar") {
         atualiza();
       } else {
@@ -129,15 +192,15 @@ export default {
 
     async function cadastra() {
       try {
-        const request = await api.post(`api/clientes`, form.value);
+        const request = await api.post(`api/carros`, form.value);
         if (request.status == 201) {
           $q.notify({
             color: "positive",
             position: "top",
-            message: "Cliente cadastrado com sucesso!",
+            message: "Carro cadastrado com sucesso!",
             icon: "check",
           });
-          $router.push("/configuracoes/clientes");
+          $router.push("/configuracoes/carros");
         }
       } catch (error) {
         $q.notify({
@@ -153,7 +216,7 @@ export default {
       console.log("atualiza");
       try {
         const request = await api.put(
-          `api/clientes/${$route.params.id}`,
+          `api/carros/${$route.params.id}`,
           form.value
         );
         if (request.status == 200) {
@@ -161,10 +224,10 @@ export default {
           $q.notify({
             color: "positive",
             position: "top",
-            message: "Cliente atualizado com sucesso!",
+            message: "Carro atualizado com sucesso!",
             icon: "check",
           });
-          $router.push("/configuracoes/Clientes");
+          $router.push("/configuracoes/Carros");
         }
       } catch (error) {
         $q.notify({
@@ -173,14 +236,14 @@ export default {
           message: "Ocorreu um erro!",
           icon: "report_problem",
         });
-        $q.loading.hide();
       }
     }
 
     return {
       form,
       editor,
-      generos,
+      clientes,
+      carregaClientes,
       submit,
     };
   },

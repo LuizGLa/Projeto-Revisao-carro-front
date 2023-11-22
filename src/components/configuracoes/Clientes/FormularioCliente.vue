@@ -173,7 +173,6 @@ export default {
           message: "Ocorreu um erro!",
           icon: "report_problem",
         });
-        $q.loading.hide();
       }
     }
 

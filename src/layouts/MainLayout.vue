@@ -1,22 +1,31 @@
 <template>
   <q-layout view="hHh lpR fFf">
     <q-header elevated class="bg-blue-10 text-white">
-      <q-toolbar>
-        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
-
-        <q-toolbar-title> Carta de Serviços </q-toolbar-title>
-        <div class>
+      <q-toolbar style="background-color: rgb(255, 255, 255)">
+        <div class="group-all">
           <q-btn
-            color="white"
-            rounded
-            no-caps=""
-            text-color="primary"
-            @click="handleLogout()"
-            class="row items-center"
-          >
-            <q-item-section> Sair</q-item-section>
-            <q-icon name="logout" style="width: 0.3em; margin-left: 0.4em" />
-          </q-btn>
+            dense
+            size="lg"
+            style="color: rgb(5, 46, 94); margin-left: 1.5em"
+            flat
+            round
+            icon="menu"
+            @click="toggleLeftDrawer"
+          />
+          <img class="logo" src="../assets/imgs/Logo.png" />
+          <div class>
+            <q-btn
+              color="white"
+              rounded
+              no-caps
+              text-color="primary"
+              @click="handleLogout()"
+              class="row items-center"
+            >
+              <q-item-section> Sair</q-item-section>
+              <q-icon name="logout" style="width: 0.3em; margin-left: 0.4em" />
+            </q-btn>
+          </div>
         </div>
       </q-toolbar>
     </q-header>
@@ -97,3 +106,16 @@ export default {
   },
 };
 </script>
+<style scoped>
+.logo {
+  width: auto;
+  height: 7em;
+}
+
+.group-all {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+</style>
