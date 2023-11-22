@@ -4,57 +4,39 @@
       <div class="row q-col-gutter-md">
         <div class="col-6 col-sm-4 col-sm-4">
           <q-input
-            ref="marcaRef"
+            ref="descricaoRef"
             dense
             outlined
-            v-model="form.marca"
-            label="Marca"
+            v-model="form.descricao"
+            label="Descrição"
             :rules="[(val) => !!val || 'Campo Obrigatório']"
           />
         </div>
         <div class="col-6 col-sm-4 col-md-4 q-mb-lg">
           <q-input
-            ref="modeloRef"
+            ref="valorRef"
             dense
             outlined
-            v-model="form.modelo"
-            label="Modelo"
+            v-model="form.valor"
+            type="number"
+            label="Valor"
             :rules="[(val) => !!val || 'Campo Obrigatório']"
           />
         </div>
-        <div class="col-4 col-sm-3 col-md-6 q-mb-lg">
+        <div class="col-6 col-sm-4 col-md-4 q-mb-lg">
           <q-input
-            ref="corRef"
+            ref="dataRef"
+            type="date"
             dense
             outlined
-            v-model="form.cor"
-            label="Cor"
-            :rules="[(val) => !!val || 'Campo Obrigatório']"
-          />
-        </div>
-        <div class="col-4 col-sm-3 col-md-4 q-mb-lg">
-          <q-input
-            ref="anoRef"
-            dense
-            outlined
-            v-model="form.ano"
-            label="Ano"
-            :rules="[(val) => !!val || 'Campo Obrigatório']"
-          />
-        </div>
-        <div class="col-4 col-sm-3 col-md-3 q-mb-lg">
-          <q-input
-            ref="placaRef"
-            dense
-            outlined
-            v-model="form.placa"
-            label="Placa"
+            v-model="form.data"
+            label="Data"
             :rules="[(val) => !!val || 'Campo Obrigatório']"
           />
         </div>
         <div class="col-2 col-sm-3 col-md-3">
           <q-select
-            ref="icone_id"
+            ref="cliente_id"
             v-model="form.cliente_id"
             dense
             style="width: 15em"
@@ -62,6 +44,23 @@
             label="Cliente"
             :options="clientes"
             option-label="nome"
+            behavior="menu"
+            option-value="value"
+            :rules="[(val) => !!val || 'Campo Obrigatório']"
+            emit-value
+            map-options
+          />
+        </div>
+        <div class="col-2 col-sm-3 col-md-3">
+          <q-select
+            ref="carro_id"
+            v-model="form.carro_id"
+            dense
+            style="width: 15em"
+            outlined
+            label="Carro"
+            :options="carros"
+            option-label="placa"
             behavior="menu"
             option-value="value"
             :rules="[(val) => !!val || 'Campo Obrigatório']"
@@ -108,14 +107,14 @@ export default {
     const $router = useRouter();
     const $route = useRoute();
     const clientes = ref([]);
+    const carros = ref([]);
 
     const form = ref({
-      marca: "",
-      modelo: "",
-      cor: "",
-      ano: "",
-      placa: "",
+      descricao: "",
+      valor: "",
+      data: "",
       cliente_id: "",
+      carro_id: "",
     });
 
     const editor = {
@@ -166,22 +165,42 @@ export default {
       }
     }
 
+    async function carregaCarros() {
+      try {
+        const { status, data } = await api.get(`api/carros`);
+        if (status == 200) {
+          data.map((value) => {
+            carros.value.push({
+              value: value.id,
+              placa: value.placa,
+            });
+          });
+        }
+      } catch (error) {
+        $q.notify({
+          color: "negative",
+          position: "bottom",
+          message: "Ocorreu um erro!",
+          icon: "report_problem",
+        });
+      }
+    }
+
     onMounted(async () => {
+      carregaCarros();
       carregaClientes();
       if (props.acao === "editar") {
-        const response = await api.get(`api/carros/${$route.params.id}`);
-        const carro = response.data;
-        const { marca, modelo, cor, ano, placa, cliente_id } = carro;
-        form.value.marca = marca;
-        form.value.modelo = modelo;
-        form.value.cor = cor;
-        form.value.ano = ano;
-        form.value.placa = placa;
+        const response = await api.get(`api/revisoes/${$route.params.id}`);
+        const revisao = response.data;
+        const { valor, descricao, data, carro_id, cliente_id } = revisao;
+        form.value.valor = valor;
+        form.value.descricao = descricao;
+        form.value.data = data;
+        form.value.carro_id = carro_id;
         form.value.cliente_id = cliente_id;
       }
     });
     function submit() {
-      form.value.placa = form.value.placa.toUpperCase();
       console.log("form", form.value);
       if (props.acao === "editar") {
         atualiza();
@@ -192,15 +211,15 @@ export default {
 
     async function cadastra() {
       try {
-        const request = await api.post(`api/carros`, form.value);
+        const request = await api.post(`api/revisoes`, form.value);
         if (request.status == 201) {
           $q.notify({
             color: "positive",
             position: "top",
-            message: "Carro cadastrado com sucesso!",
+            message: "Revisão cadastrado com sucesso!",
             icon: "check",
           });
-          $router.push("/configuracoes/carros");
+          $router.push("/configuracoes/revisoes");
         }
       } catch (error) {
         $q.notify({
@@ -224,7 +243,7 @@ export default {
           $q.notify({
             color: "positive",
             position: "top",
-            message: "Carro atualizado com sucesso!",
+            message: "Revisão atualizado com sucesso!",
             icon: "check",
           });
           $router.push("/configuracoes/Carros");
@@ -243,7 +262,9 @@ export default {
       form,
       editor,
       clientes,
+      carros,
       carregaClientes,
+      carregaCarros,
       submit,
     };
   },

@@ -6,7 +6,7 @@
           <q-btn
             dense
             size="lg"
-            style="color: rgb(5, 46, 94); margin-left: 1.5em"
+            color="primary"
             flat
             round
             icon="menu"
@@ -90,6 +90,11 @@ export default {
           title: "Carros",
           icon: "no_crash",
           link: "/configuracoes/carros",
+        },
+        {
+          title: "Revisões",
+          icon: "assignment_add",
+          link: "/configuracoes/revisoes",
         }
       );
     }

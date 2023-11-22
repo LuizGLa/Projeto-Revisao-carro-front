@@ -110,12 +110,11 @@ export default {
     onMounted(async () => {
       if (props.acao === "editar") {
         const response = await api.get(`api/clientes/${$route.params.id}`);
-        const cliente = response.data;
-        console.log(cliente);
-
-        form.value.nome = cliente.nome;
-        form.value.sexo = cliente.sexo;
-        form.value.idade = cliente.idade;
+        const cliente = response.data[0];
+        const { nome, sexo, idade } = cliente;
+        form.value.nome = nome;
+        form.value.sexo = sexo;
+        form.value.idade = idade;
       }
     });
 

@@ -34,6 +34,21 @@ const routes = [
         path: "configuracoes/carros/editar/:id",
         component: () => import("../pages/configuracoes/Carros/EditarPage.vue"),
       },
+      {
+        path: "configuracoes/revisoes",
+        component: () =>
+          import("../pages/configuracoes/Revisoes/ListaPage.vue"),
+      },
+      {
+        path: "configuracoes/revisoes/adicionar",
+        component: () =>
+          import("../pages/configuracoes/Revisoes/AdicionarPage.vue"),
+      },
+      {
+        path: "configuracoes/revisoes/editar/:id",
+        component: () =>
+          import("../pages/configuracoes/Revisoes/EditarPage.vue"),
+      },
     ],
     beforeEnter: auth,
   },
